@@ -62,7 +62,7 @@ jobs:
         with:
           context: ./backend/
           push: true
-          tags: arnosimonian/kittygram_backend:latest 
+          tags: ${{ secrets.DOCKER_USERNAME }}/kittygram_backend:latest 
 
   frontend_tests:
     runs-on: ubuntu-latest
@@ -100,7 +100,7 @@ jobs:
         with:
           context: ./frontend/
           push: true
-          tags: arnosimonian/kittygram_frontend:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/kittygram_frontend:latest
 
   build_gateway_and_push_to_docker_hub:
     name: Push gateway Docker image to DockerHub
@@ -120,7 +120,7 @@ jobs:
         with:
           context: ./nginx/
           push: true
-          tags: arnosimonian/kittygram_gateway:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/kittygram_gateway:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -165,4 +165,7 @@ jobs:
       with:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
-        message: Деплой успешно выполнен!
+        message: "Деплой успешно выполнен!
+                  Автор: ${{ github.actor }}
+                  Событие: ${{ github.event.commits[0].message }}
+                  Ссылка на коммит: https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
