@@ -1,26 +1,96 @@
-#  Как работать с репозиторием финального задания
+# Kittygram
 
-## Что нужно сделать
 
-Настроить запуск проекта Kittygram в контейнерах и CI/CD с помощью GitHub Actions
+## Описание
 
-## Как проверить работу с помощью автотестов
+Cоциальная сеть для обмена фотографиями домашних животных. Состоит из бэкенд-приложения на Django и фронтенд-приложения на React. 
 
-В корне репозитория создайте файл tests.yml со следующим содержимым:
-```yaml
-repo_owner: ваш_логин_на_гитхабе
-kittygram_domain: полная ссылка (https://доменное_имя) на ваш проект Kittygram
-taski_domain: полная ссылка (https://доменное_имя) на ваш проект Taski
-dockerhub_username: ваш_логин_на_докерхабе
+Поддерживает регистрацию и авторизацию, можно добавить нового питомца на сайт или изменить существующего, а также просмотреть записи других пользователей.
+
+
+## Технологии
+
+- Python 3.7
+- Django
+- Django REST Framework
+- PostgreSQL
+- Node.js
+- React
+- Gunicorn
+- Nginx
+- Docker
+- GitHub Actions
+
+
+## Как развернуть проект локально
+
+1. Клонируйте репозиторий и перейдите в него в командной строке:
+```bash
+  git clone https://github.com/ArnoSimonian/kittygram.git
+  cd kittygram
 ```
 
-Скопируйте содержимое файла `.github/workflows/main.yml` в файл `kittygram_workflow.yml` в корневой директории проекта.
+2. В папке ```kittygram/``` создайте файл ```.env``` с переменными окружения, следуя образцу заполнения:
 
-Для локального запуска тестов создайте виртуальное окружение, установите в него зависимости из backend/requirements.txt и запустите в корневой директории проекта `pytest`.
+```bash
+  POSTGRES_DB=kittygram
+  POSTGRES_USER=kittygram_user
+  POSTGRES_PASSWORD=kittygram_password
+  DB_NAME=kittygram
+  DB_HOST=db
+  DB_PORT=5432
+```
 
-## Чек-лист для проверки перед отправкой задания
+3. Соберите и запустите докер-контейнеры через Docker Compose:
 
-- Проект Taski доступен по доменному имени, указанному в `tests.yml`.
-- Проект Kittygram доступен по доменному имени, указанному в `tests.yml`.
-- Пуш в ветку main запускает тестирование и деплой Kittygram, а после успешного деплоя вам приходит сообщение в телеграм.
-- В корне проекта есть файл `kittygram_workflow.yml`.
+```bash
+  docker compose up --build
+```
+
+## Как развернуть проект на сервере
+
+Создайте папку ```kittygram/``` с файлом ```.env``` в домашней директории вашего сервера. Образец заполнения файла приведен выше.
+
+```bash
+  cd ~
+  mkdir kittygram
+  nano kittygram/.env
+```
+
+Настройте в nginx перенаправление запросов на порт 9000:
+
+```bash
+  location / {
+        proxy_pass http://127.0.0.1:8000;
+  }
+```
+
+Получите HTTPS-сертификат для доменного имени:
+```sh
+  sudo certbot --nginx
+```
+Добавьте в Secrets на GitHub Actions следующие переменные:
+
+`DOCKER_USERNAME` _#  логин на Docker Hub_
+
+`DOCKER_PASSWORD` _# пароль на Docker Hub_
+
+`SSH_KEY` _# закрытый SSH-ключ для подключения к серверу_
+
+`SSH_PASSPHRASE` _# пароль от этого ключа_
+
+`USER` _#и мя пользователя на сервере_
+
+`HOST` _# IP-адрес сервера_
+
+`TELEGRAM_TO` _# ID телеграм-аккаунта для сообщений об успешном деплое_
+
+`TELEGRAM_TOKEN` _# токен телеграм-бота_
+
+
+При отправке коммита в ветку `main` с помощью `push` будет выполнен полный деплой проекта. Подробности в файле [main.yml](https://github.com/ArnoSimonian/kittygram/blob/main/.github/workflows/main.yml).
+
+
+## Автор
+
+Арно Симонян [@ArnoSimonian](https://www.github.com/ArnoSimonian)
